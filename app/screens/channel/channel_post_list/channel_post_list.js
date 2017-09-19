@@ -160,8 +160,13 @@ class ChannelPostList extends PureComponent {
         this.props.actions.loadPostsIfNecessaryWithRetry(channelId);
     };
 
+    loadPostsRetry = () => {
+        this.loadPosts(this.props.channel.id);
+    };
+
     render() {
         const {
+            actions,
             channel,
             channelIsLoading,
             channelIsRefreshing,
@@ -174,13 +179,16 @@ class ChannelPostList extends PureComponent {
             theme
         } = this.props;
 
-        const {retryMessageHeight} = this.state;
+        const {
+            retryMessageHeight,
+            showLoadMore
+        } = this.state;
 
         let component;
         if (!posts.length && channelRefreshingFailed) {
             component = (
                 <PostListRetry
-                    retry={() => this.loadPosts(channel.id)}
+                    retry={this.loadPostsRetry}
                     theme={theme}
                 />
             );
@@ -192,8 +200,9 @@ class ChannelPostList extends PureComponent {
                     posts={posts.slice(0, postVisibility)}
                     loadMore={this.loadMorePosts}
                     isLoadingMore={loadingPosts}
-                    showLoadMore={this.state.showLoadMore}
+                    showLoadMore={showLoadMore}
                     onPostPress={this.goToThread}
+                    onRefresh={actions.setChannelRefreshing}
                     renderReplies={true}
                     indicateNewMessages={true}
                     currentUserId={myMember.user_id}
@@ -212,7 +221,7 @@ class ChannelPostList extends PureComponent {
         };
 
         return (
-            <View style={{flex: 1}}>
+            <View style={style.container}>
                 {component}
                 <AnimatedView style={[style.refreshIndicator, refreshIndicatorDimensions]}>
                     <FormattedText
@@ -227,6 +236,9 @@ class ChannelPostList extends PureComponent {
 }
 
 const style = StyleSheet.create({
+    container: {
+        flex: 1
+    },
     refreshIndicator: {
         alignItems: 'center',
         backgroundColor: '#fb8000',
