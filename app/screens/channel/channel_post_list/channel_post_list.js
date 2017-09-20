@@ -5,6 +5,7 @@ import React, {PureComponent} from 'react';
 import PropTypes from 'prop-types';
 import {injectIntl, intlShape} from 'react-intl';
 import {
+    ActivityIndicator,
     Animated,
     Dimensions,
     Platform,
@@ -14,7 +15,6 @@ import {
 
 import {General} from 'mattermost-redux/constants';
 
-import ChannelLoader from 'app/components/channel_loader';
 import FormattedText from 'app/components/formatted_text';
 import PostList from 'app/components/post_list';
 import PostListRetry from 'app/components/post_list_retry';
@@ -204,8 +204,6 @@ class ChannelPostList extends PureComponent {
                     theme={theme}
                 />
             );
-        } else if (channelIsLoading) {
-            component = <ChannelLoader theme={theme}/>;
         } else {
             component = (
                 <PostList
@@ -227,6 +225,21 @@ class ChannelPostList extends PureComponent {
             );
         }
 
+        let loadingIndicator = null;
+        if (channelIsLoading) {
+            loadingIndicator = (
+                <View
+                    style={style.loadingIndicator}
+                    pointerEvents='none'
+                >
+                    <ActivityIndicator
+                        size='large'
+                        color={theme.centerChannelColor}
+                    />
+                </View>
+            );
+        }
+
         const refreshIndicatorDimensions = {
             width: Dimensions.get('window').width,
             height: retryMessageHeight
@@ -242,6 +255,7 @@ class ChannelPostList extends PureComponent {
                         style={{color: 'white', flex: 1, fontSize: 12}}
                     />
                 </AnimatedView>
+                {loadingIndicator}
             </View>
         );
     }
@@ -259,6 +273,15 @@ const style = StyleSheet.create({
         position: 'absolute',
         top: 0,
         overflow: 'hidden'
+    },
+    loadingIndicator: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        alignItems: 'center',
+        justifyContent: 'center'
     }
 });
 

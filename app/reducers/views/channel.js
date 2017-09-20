@@ -176,7 +176,8 @@ function drafts(state = {}, action) {
 
 function loading(state = false, action) {
     switch (action.type) {
-    case ChannelTypes.SELECT_CHANNEL:
+    case PostTypes.GET_POSTS_SUCCESS:
+    case PostTypes.GET_POSTS_FAILURE:
         return false;
     case ViewTypes.SET_CHANNEL_LOADER:
         return action.loading;
